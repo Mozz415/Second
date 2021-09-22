@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">程序</string>
+    <string name="work">作品</string>
+    <string name="au">作者</string>
+    <string name="subscribe">关注</string>
+    <string name="like">点赞</string>
+    <string name="coins">投币</string>
+    <string name="collect">收藏</string>
+    <string name="zhongqiu">祝您中秋快乐！</string>
+    <string name="me">周静然</string>
+    <string name="input1">身高（米）</string>
+    <string name="input2">体重（千克）</string>
+    <string name="result">BMI结果报告</string>
+    <string name="click">获取</string>
+    <string name="showout">BMI计算器</string>
+</resources>

@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Second</string>
+    <string name="hello" translatable="false">hello world</string>
+    <string name="work">works</string>
+    <string name="au">author</string>
+    <string name="subscribe">subscribe</string>
+    <string name="like">like</string>
+    <string name="coins">coins</string>
+    <string name="collect">collect</string>
+    <string name="zhongqiu">Happy Mid-Autumn Festival!</string>
+    <string name="me">Mozz_L</string>
+    <string name="input1">height</string>
+    <string name="input2">weight</string>
+    <string name="result">result</string>
+    <string name="click">check</string>
+    <string name="showout">BMI Calculator</string>
+    <string name="title_activity_ball">BallActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+</resources>

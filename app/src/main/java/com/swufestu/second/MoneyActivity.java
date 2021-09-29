@@ -20,16 +20,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.annotation.Documented;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 //汇率转换主页面
-public class MoneyActivity extends AppCompatActivity  implements Runnable{
+public class MoneyActivity<TAG> extends AppCompatActivity  implements Runnable{
 
     private static final String TAG = "MoneyActivity";
 
@@ -44,6 +51,9 @@ public class MoneyActivity extends AppCompatActivity  implements Runnable{
     double money;
     double money1;
     Handler handler; //线程同步，用于接收和发送。注：这里不能有方法可以附初值如null
+
+    public MoneyActivity() throws IOException {
+    }
 
 
     @Override
@@ -66,8 +76,13 @@ public class MoneyActivity extends AppCompatActivity  implements Runnable{
             public void handleMessage(@NonNull Message msg) {
                 Log.i(TAG, "handleMessage: 收到消息");
                 if (msg.what == 6) {
-                    String str = (String) msg.obj; //将收到的消息转换成String
-                    Log.i(TAG, "handleMessage: handleMessage:getMessange msg=" + str);
+                    Bundle bdl = (Bundle)msg.obj;
+                    dollarRate = bdl.getFloat("key_dollar");
+                    euroRate = bdl.getFloat("key_euro");
+                    wonRate = bdl.getFloat("key_won");
+                    Toast.makeText(MoneyActivity.this,"汇率已更新",Toast.LENGTH_SHORT).show();
+//                    String str = (String) msg.obj; //将收到的消息转换成String
+//                    Log.i(TAG, "handleMessage: handleMessage:getMessange msg=" + str);
                 }
                 super.handleMessage(msg);
             }
@@ -145,9 +160,10 @@ public class MoneyActivity extends AppCompatActivity  implements Runnable{
         return super.onOptionsItemSelected(item);
     }
 
+    //开启线程的run
     @Override
     public void run() {
-
+        //延迟
         try {
             Thread.sleep(3000); //休息3秒
         } catch (InterruptedException e) {
@@ -181,6 +197,47 @@ public class MoneyActivity extends AppCompatActivity  implements Runnable{
         Log.i(TAG, "run: 消息已发送");
 
 
+        //Jsoup
+        //获取标题，从一个汇率网站，并做到每天更新的关键代码
+        Bundle bundle = new Bundle(); //这里一定要加！！！
+        try {
+            Document doc = Jsoup.connect("https://usd-cny.com/").get();
+            Log.i(TAG,"run:title="+ doc.title());
+            Elements tables = doc.getElementsByTag("table");
+            Element firstTable = doc.getElementsByTag("table").first();//从集合中直接获得，避免标签不同产生问题
+
+            Elements trs = firstTable.getElementsByTag("tr");
+            trs.remove(0);//或者直接去除第一行
+            for(Element tr : trs){
+                Log.i(TAG,"run: tr=" + trs);
+                //从行中获取td元素
+                Elements tds = firstTable.getElementsByTag("td");
+                //Log.i(TAG,"run:tds.count=" + tds.size());
+                String td1 = tds.get(0).text();
+                String td2 = tds.get(4).text();
+                //运行出币种+数据
+                Log.i(TAG,"run:td1=" + td1 + "--->" + td2);
+                if("美元".equals(td1)) {
+                    bundle.putFloat("key dollar", 100/Float.parseFloat(td2));
+//                    String val = td2;
+//                    dollarRate=100f/Float.parseFloat(val);
+//                    Log.i(TAG, "run: 美元汇率"+dollarRate);
+                }else if("欧元".equals(td1)){
+                    bundle.putFloat("key euro",100/Float.parseFloat(td2));
+//                    String val = td2;
+//                    euroRate=100f/Float.parseFloat(val);
+//                    Log.i(TAG, "run: 欧元汇率"+euroRate);
+                }else if("韩币".equals(td1)){
+                    bundle.putFloat("key won",100/Float.parseFloat(td2));
+//                    String val = td2;
+//                    wonRate=100f/Float.parseFloat(val);
+//                    Log.i(TAG, "run: 韩币汇率"+wonRate);
+                }
+            }
+        }catch (IOException e){
+            e.printStackTrace();;
+        }
+
     }
 
     //获取界面内容
@@ -200,6 +257,7 @@ public class MoneyActivity extends AppCompatActivity  implements Runnable{
         return out.toString();
 
     }
+
 
 }
 
